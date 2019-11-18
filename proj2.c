@@ -7,9 +7,16 @@
  *      date: Nov 18. 2019            *
  *                                    *
  *************************************/
+
+ /*if (argv[2] == 0) {
+   fprintf(stderr, "R can not be 0! - is used to devide");
+ }*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
+#include <ctype.h>
 
 /*@brief Kontrola, ci su argumenty validne
  *
@@ -19,6 +26,35 @@
 bool is_number(int argc, char *argv[]) {
   bool statement = false;
 
+  for (int j = 1; j < argc; j++) {     // prebehne argumenty
+    bool exponent = false;
+    char *argument = argv[j];
+    if ((argument[0] == '+') || (argument[0] == '-') || (isdigit(argument[0])) ) {
+      for (unsigned int i = 1; i < strlen(argument); i++) { // prebehne chary v argumente
+          if ((argument[i] == 'e') || (isdigit(argument[i]) || (argument[i] == '.')) ) {
+            statement = true;         // vyhovuje => true
+            if (argument[i] == 'e') { // osetrenie viacnasobneho exponentu
+              if (exponent == true) {
+                fprintf(stderr, "Multiple exponent in argument!");
+                return false;
+              }
+              exponent = true;
+              if ((argument[i+1] == '+') || (argument[i+1] == '-')) { // nasledujuci znak za e moze byt +/-
+                i++; // posuniem za +/-
+              }
+            }
+          }
+          else {                      // nevyhovujuci charakter
+            fprintf(stderr,"Invalid characters in arguments!");
+            return false;
+          }
+      }
+    }
+    else {
+      fprintf(stderr,"Invalid characters in arguments!");
+      return false;
+    }
+  }
   return statement;
 }
 
@@ -32,7 +68,7 @@ bool argument_check(int argc) {
     statement = true; // Valid number of arguments
   }
   else {
-    fprintf(stderr, "Invalid number of arguments! Alloved 4, entered %d",argc);
+    fprintf(stderr, "Invalid number of arguments! Alloved 4, entered %d\n",argc);
   }
   return statement;
 }
@@ -46,6 +82,6 @@ int main(int argc, char *argv[]) {
   if(!argument_check(argc) || !is_number(argc, argv)) {
     return 1;
   }
-  printf("ide%d\n",argc);
+
   return 0;
 }

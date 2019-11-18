@@ -1,47 +1,3 @@
-
-FIT 	
-home
-	
-studia
-	
-předměty
-	
-termíny
-	
-registrace
-	
-hesla
-	
-ostatní
-	
-odhlásit
-	 english 
-Login xguman01, Gumančík Pavol, 2. ročník BIT, prezenční, FIT
-Ak. rok 2019/2020 studium č. 1: řádný zápis
-
-	Zpět na termíny 
-[[IZP Home]]
-
-Navigace
-
-    Hlavní stránka
-    Poslední změny
-    Nápověda
-
-Stránka
-
-Nástroje
-
-    Odkazuje sem
-    Nahrát soubor
-    Seznam souborů
-    Seznam stránek
-    Historie stránky
-
-	
-
-    StránkaZdrojSledovat 
-
 Projekt 2 - Iterační výpočty
 Obsah
 1	Popis projektu
@@ -127,7 +83,4 @@ Reference
     Bečvář, J., Lineární algebra, matfyzpress, Praha, 2005.
     Funkce exp(3).
 
-Nahoru
-Id stránky: 156, verze: 11728, dne: 2019-11-17 20:10:18 uložil: smrcka
-©Fakulta informačních technologií VUT v Brně, Božetěchova 2, 612 66 Brno
-Připomínky zasílejte na adresu lampa@fit.vut.cz
+

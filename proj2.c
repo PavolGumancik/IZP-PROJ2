@@ -8,10 +8,6 @@
  *                                    *
  *************************************/
 
- /*if (argv[2] == 0) {
-   fprintf(stderr, "R can not be 0! - is used to devide");
- }*/
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -28,11 +24,19 @@ bool is_number(int argc, char *argv[]) {
 
   for (int j = 1; j < argc; j++) {     // prebehne argumenty
     bool exponent = false;
+    bool dot = false;
     char *argument = argv[j];
     if ((argument[0] == '+') || (argument[0] == '-') || (isdigit(argument[0])) ) {
       for (unsigned int i = 1; i < strlen(argument); i++) { // prebehne chary v argumente
           if ((argument[i] == 'e') || (isdigit(argument[i]) || (argument[i] == '.')) ) {
             statement = true;         // vyhovuje => true
+            if (argument[i] == '.') {
+              if (dot == true) {
+                fprintf(stderr, "Multiple dot in argument!");
+                return false;
+              }
+              dot = true;
+            }
             if (argument[i] == 'e') { // osetrenie viacnasobneho exponentu
               if (exponent == true) {
                 fprintf(stderr, "Multiple exponent in argument!");

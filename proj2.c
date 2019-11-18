@@ -14,6 +14,8 @@
 #include <string.h>
 #include <ctype.h>
 
+const double I_0 = 0.00000000001; // A
+const double U_T = 0.0258563; // V
 /*@brief Kontrola, ci su argumenty validne
  *
  *@param argc pocet argumentoc

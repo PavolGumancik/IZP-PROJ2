@@ -14,8 +14,9 @@
 #include <string.h>
 #include <ctype.h>
 
-const double I_0 = 0.00000000001; // A
-const double U_T = 0.0258563; // V
+const double I0 = 0.00000000001; // A
+const double UT = 0.0258563; // V
+
 /*@brief Kontrola, ci su argumenty validne
  *
  *@param argc pocet argumentoc
@@ -79,6 +80,51 @@ bool argument_check(int argc) {
   return statement;
 }
 
+/*@brief Iterace volana rekurzi
+ *
+ *@param u0 Hodnota vstupního napětí ve Voltech
+ *@param r Odpor rezistoru v Ohmech
+ *@param eps
+ */
+void iteration(double u0, double r, double eps) {
+
+
+
+  /*if ((-) == eps) {
+    printf("Up=%gV\nIp=%g A\n", );
+  }*/
+}
+
+/*@brief Konvertuje argumenty na double a skontroluje intervaly
+ *
+ *@param argv Argumenty programu
+ */
+void string_to_double(char *argv[]) {
+  double u0 = 0.0;
+  double r = 0.0;
+  double eps = 0.0;
+
+  sscanf(argv[1], "%lf", &u0);  //conver to double
+  sscanf(argv[2], "%lf", &r);   //conver to double
+  sscanf(argv[3], "%lf", &eps); //conver to double
+
+  if (r <= 0.0) {
+    fprintf(stderr, "R can not be equal or less than zero!");
+    return;
+  }
+  if (u0 < 0.0) {
+    fprintf(stderr, "U0 can not be less than zero!");
+    return;
+  }
+  if (eps < 0.0) {
+    fprintf(stderr, "EPS can not be less than zero!");
+    return;
+  }
+
+  iteration(u0, r, eps);
+
+}
+
 // ./proj2 U0 R EPS
 // gcc -std=c99 -Wall -Wextra -Werror proj2.c -lm -o proj2
 // U0 je hodnota vstupního napětí ve Voltech,
@@ -88,6 +134,6 @@ int main(int argc, char *argv[]) {
   if(!argument_check(argc) || !is_number(argc, argv)) {
     return 1;
   }
-
+  string_to_double(argv);
   return 0;
 }

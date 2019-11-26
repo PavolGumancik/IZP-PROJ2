@@ -140,7 +140,7 @@ double diode(double u0, double r, double eps) {
     }
     counter++;
   }
-  if (counter >= 20000) {
+  if (counter >= 2000) {
   fprintf(stderr, "Breaks to prevent inf loop.\n");
   }
   return middle; //up
@@ -168,7 +168,11 @@ void string_to_double(char *argv[]) {
     fprintf(stderr, "EPS can not be less or EQ than zero!\n");
     return;
   }
-  
+  if (u0 < 0.0) {
+    fprintf(stderr, "u0 can not be less or EQ than zero!\n");
+    return;
+  }
+
   double up = diode(u0, r, eps);
   printf("Up=%g V\nIp=%g A\n",up, (u0-up)/r);
 }

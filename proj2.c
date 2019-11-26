@@ -129,20 +129,20 @@ double diode(double u0, double r, double eps) {
   double fmid= eval_func(middle, u0, r); // hodnota v danom intervale
   int counter = 0;
 
-  while ((fabs(schotly(a, u0, r, b)) > eps) && (counter < 20000)) {
+  while ((fabs(a-b) > eps) && (counter < 2000)) {
     if (eval_func(a, u0, r) * fmid < 0)
       b = middle; // je zaporne, nachadza sa v danom intervale -> prepisem koniec
     else
       a = middle;
-    if (fabs(schotly(a, u0, r, b)) > eps){
+    if (fabs(a-b) > eps){
       middle = (a + b) / 2;
       fmid = eval_func(middle, u0, r);
     }
     counter++;
   }
-  if (counter >= 2000) {
+  /*if (counter >= 2000) {
   fprintf(stderr, "Breaks to prevent inf loop.\n");
-  }
+  }*/
   return middle; //up
 }
 

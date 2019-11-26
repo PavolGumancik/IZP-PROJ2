@@ -29,7 +29,14 @@ bool is_number(int argc, char *argv[]) {
     bool exponent = false;
     bool dot = false;
     char *argument = argv[j];
-    if ((strcmp(argv[j],"inf") == 0)||(strcmp(argv[j],"-inf") == 0)||(strcmp(argv[j],"nan") == 0)) {
+    for (size_t m = 0; m < strlen(argument); m++) { // pre pripad velkosti v inf a nan
+      if (argument[m]>64 && argument[m]<91)  //pokud je znak velke pismeno
+        {
+          argument[m] += ('a'-'A'); // konvertuje v asci na male pismeno
+        }
+    }
+
+    if ((strcmp(argument,"inf") == 0)||(strcmp(argument,"-inf") == 0)||(strcmp(argument,"nan") == 0)) {
       statement = true; // Akceptuje aj hodnoty inf a nan
     }
 

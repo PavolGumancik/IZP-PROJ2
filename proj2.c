@@ -14,8 +14,8 @@
 #include <string.h>
 #include <ctype.h>
 
-const double I0 = 0.00000000001; // A
-const double UT = 0.0258563; // V
+#define I0 1e-12 // A
+#define UT 0.0258563 // V
 
 /*@brief Kontrola, ci su argumenty validne
  *
@@ -29,20 +29,24 @@ bool is_number(int argc, char *argv[]) {
     bool exponent = false;
     bool dot = false;
     char *argument = argv[j];
-    if ((argument[0] == '+') || (argument[0] == '-') || (isdigit(argument[0])) ) {
+    if ((strcmp(argv[j],"inf") == 0)||(strcmp(argv[j],"-inf") == 0)||(strcmp(argv[j],"nan") == 0)) {
+      statement = true; // Akceptuje aj hodnoty inf a nan
+    }
+
+    else if ((argument[0] == '+') || (argument[0] == '-') || (isdigit(argument[0])) ) {
       for (unsigned int i = 1; i < strlen(argument); i++) { // prebehne chary v argumente
           if ((argument[i] == 'e') || (isdigit(argument[i]) || (argument[i] == '.')) ) {
             statement = true;         // vyhovuje => true
             if (argument[i] == '.') {
               if (dot == true) {
-                fprintf(stderr, "Multiple dot in argument!");
+                fprintf(stderr, "Multiple dot in argument!\n");
                 return false;
               }
               dot = true;
             }
             if (argument[i] == 'e') { // osetrenie viacnasobneho exponentu
               if (exponent == true) {
-                fprintf(stderr, "Multiple exponent in argument!");
+                fprintf(stderr, "Multiple exponent in argument!\n");
                 return false;
               }
               exponent = true;
@@ -52,13 +56,13 @@ bool is_number(int argc, char *argv[]) {
             }
           }
           else {                      // nevyhovujuci charakter
-            fprintf(stderr,"Invalid characters in arguments!");
+            fprintf(stderr,"Invalid characters in arguments!\n");
             return false;
           }
       }
     }
-    else {
-      fprintf(stderr,"Invalid characters in arguments!");
+    else if (statement == false){
+      fprintf(stderr,"Invalid characters in arguments!\n");
       return false;
     }
   }
@@ -80,19 +84,57 @@ bool argument_check(int argc) {
   return statement;
 }
 
-/*@brief Iterace volana rekurzi
+/*@brief Pocita hodnoty s danym napatim
  *
- *@param u0 Hodnota vstupního napětí ve Voltech
- *@param r Odpor rezistoru v Ohmech
- *@param eps
+ *@param up Okrajove napatie
+ *@param up1 Okrajove napatie
+ *@param r Odpor rezistora
+ *@param u0 Pociatocne napatie
  */
-void iteration(double u0, double r, double eps) {
+double schotly(double up,double u0, double r, double up1) {
+  double i = (I0*(exp(up / UT) - 1) - ((u0 - up) / r)) - (I0*(exp(up1 / UT) - 1) - ((u0 - up1) / r));
+  //printf("%g\n",I0*(exp(up / UT) - 1) - ((u0 - up) / r));
+  //printf("%g\n\n",I0*(exp(up1 / UT) - 1) - ((u0 - up1) / r));
+  return i;
+}
 
+/*@brief Pocita hodnoty s danym napatim
+ *
+ *@param un Pociatocne napatie
+ *@param r Odpor rezistora
+ *@param eps Absolutní přesnost (maximální požadovaná odchylka)
+ */
+double eval_func(double up, double u0, double r) {
+  return I0*(exp(up / UT) - 1) - ((u0 - up) / r);
+}
 
+/*@brief Pocita Up s danou presnostou
+ *
+ *@param un Pociatocne napatie
+ *@param r Odpor rezistora
+ *@param eps Absolutní přesnost (maximální požadovaná odchylka)
+ */
+double diode(double u0, double r, double eps) {
 
-  /*if ((-) == eps) {
-    printf("Up=%gV\nIp=%g A\n", );
-  }*/
+  double b = u0;
+  double a = 0.0;
+  double middle= (a + b) / 2; // stred intervalu
+  double fmid= eval_func(middle, u0, r); // hodnota v danom intervale
+  int counter = 0;
+
+  while ((fabs(schotly(a, u0, r, b)) > eps) && (counter < 2000)) {
+    if (eval_func(a, u0, r) * fmid < 0)
+      b = middle; // je zaporne, nachadza sa v danom intervale -> prepisem koniec
+    else
+      a = middle;
+    if (fabs(schotly(a, u0, r, b)) > eps){
+      middle = (a + b) / 2;
+      fmid = eval_func(middle, u0, r);
+    }
+    counter++;
+  }
+  fprintf(stderr, "Breaks to prevent inf loop.\n");
+  return middle; //up
 }
 
 /*@brief Konvertuje argumenty na double a skontroluje intervaly
@@ -109,31 +151,30 @@ void string_to_double(char *argv[]) {
   sscanf(argv[3], "%lf", &eps); //conver to double
 
   if (r <= 0.0) {
-    fprintf(stderr, "R can not be equal or less than zero!");
+    fprintf(stderr, "R can not be equal or less than zero!\n");
     return;
   }
-  if (u0 < 0.0) {
-    fprintf(stderr, "U0 can not be less than zero!");
+  /*if (u0 < 0.0) {
+    fprintf(stderr, "U0 can not be less than zero!\n");
+    return;
+  }*/
+  if (eps <= 0.0) {
+    fprintf(stderr, "EPS can not be less or EQ than zero!\n");
     return;
   }
-  if (eps < 0.0) {
-    fprintf(stderr, "EPS can not be less than zero!");
-    return;
-  }
+  double up = diode(u0, r, eps);
 
-  iteration(u0, r, eps);
-
+  printf("Up=%g V\nIp=%g A\n",up, (u0-up)/r);
 }
 
-// ./proj2 U0 R EPS
+
 // gcc -std=c99 -Wall -Wextra -Werror proj2.c -lm -o proj2
-// U0 je hodnota vstupního napětí ve Voltech,
-// R je odpor rezistoru v Ohmech a
-// EPS je absolutní chyba/přestnost/odchylka (epsilon),
+
 int main(int argc, char *argv[]) {
   if(!argument_check(argc) || !is_number(argc, argv)) {
     return 1;
   }
   string_to_double(argv);
+
   return 0;
 }

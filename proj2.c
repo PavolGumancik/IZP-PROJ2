@@ -163,16 +163,13 @@ void string_to_double(char *argv[]) {
     fprintf(stderr, "R can not be equal or less than zero!\n");
     return;
   }
-  /*if (u0 < 0.0) {
-    fprintf(stderr, "U0 can not be less than zero!\n");
-    return;
-  }*/
+
   if (eps <= 0.0) {
     fprintf(stderr, "EPS can not be less or EQ than zero!\n");
     return;
   }
+  
   double up = diode(u0, r, eps);
-
   printf("Up=%g V\nIp=%g A\n",up, (u0-up)/r);
 }
 

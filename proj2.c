@@ -174,7 +174,7 @@ void string_to_double(char *argv[]) {
   }
 
   double up = diode(u0, r, eps);
-  printf("Up=%g V\nIp=%g A\n",up, (u0-up)/r);
+  printf("Up=%g V\nIp=%g A\n",up, I0*(exp(up/UT)-1));
 }
 
 
